@@ -2,12 +2,12 @@ const { ApolloServer, gql, delegateToSchema } = require("apollo-server");
 
 // HackerNewsの１つ１つの投稿
 let links = [
-    {
-        id: "link-0",
-        description: "GraphQLチュートリアル学習中",
-        url: "www.graphql-tutorial.com",
-    }
-]
+  {
+    id: "link-0",
+    description: "GraphQLチュートリアル学習中",
+    url: "www.graphql-tutorial.com",
+  },
+];
 
 // Graphqlスキーマの定義
 const typeDefs = gql`
@@ -15,6 +15,11 @@ const typeDefs = gql`
     info: String!
     feed: [Link]!
   }
+
+  type Mutation {
+    post(url: String!, description: String!): Link!
+  }
+
   type Link {
     id: ID!
     description: String!
@@ -27,6 +32,19 @@ const resolvers = {
   Query: {
     info: () => "HackerNewsクローン",
     feed: () => links,
+  },
+  Mutation: {
+    post: (parent, args) => {
+      let idCount = links.length;
+
+      const link = {
+        id: `link-${idCount++}`,
+        description: args.description,
+        url: args.url,
+      };
+      links.push(link);
+      return link;
+    },
   },
 };
 
